@@ -1,0 +1,145 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@plugin "tailwindcss-animate";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-cairo: var(--font-cairo);
+  --font-sans: var(--font-cairo), ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+
+  @keyframes accordion-down {
+    from {
+      height: 0
+    }
+
+    to {
+      height: var(--radix-accordion-content-height)
+    }
+  }
+
+  @keyframes accordion-up {
+    from {
+      height: var(--radix-accordion-content-height)
+    }
+
+    to {
+      height: 0
+    }
+  }
+}
+
+:root {
+  /* Brand Colors */
+  /* Primary: #9A8D59 (Gold) */
+  /* Background: #FDFCF9 */
+  /* Text: #1A1A1A */
+
+  --background: #FDFCF9;
+  --foreground: #1A1A1A;
+
+  --card: #FFFFFF;
+  --card-foreground: #1A1A1A;
+
+  --popover: #FFFFFF;
+  --popover-foreground: #1A1A1A;
+
+  --primary: #9A8D59;
+  --primary-foreground: #FFFFFF;
+
+  --secondary: #F4F2ED;
+  /* Light beige for secondary */
+  --secondary-foreground: #1A1A1A;
+
+  --muted: #F4F2ED;
+  --muted-foreground: #7D7D7D;
+
+  --accent: #F4F2ED;
+  --accent-foreground: #1A1A1A;
+
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 0 0% 98%;
+
+  --border: #E6E4DF;
+  --input: #E6E4DF;
+  --ring: #9A8D59;
+
+  --radius: 2.5rem;
+  /* 40px rounded */
+}
+
+
+@layer utilities {
+  .container {
+    @apply mx-auto px-4;
+  }
+}
+
+.dark {
+  --background: #1A1A1A;
+  --foreground: #FDFCF9;
+
+  --card: #2A2A2A;
+  --card-foreground: #FDFCF9;
+
+  --popover: #2A2A2A;
+  --popover-foreground: #FDFCF9;
+
+  --primary: #9A8D59;
+  --primary-foreground: #FFFFFF;
+
+  --secondary: #2A2A2A;
+  --secondary-foreground: #FDFCF9;
+
+  --muted: #2A2A2A;
+  --muted-foreground: #A1A1A1;
+
+  --accent: #2A2A2A;
+  --accent-foreground: #FDFCF9;
+
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 0 0% 98%;
+
+  --border: #2A2A2A;
+  --input: #2A2A2A;
+  --ring: #9A8D59;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-cairo;
+  }
+}
