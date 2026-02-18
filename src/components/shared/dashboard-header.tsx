@@ -15,8 +15,8 @@ export function DashboardHeader() {
                             <LayoutDashboard className="h-5 w-5" />
                         </div>
                         <div className="flex flex-col">
-                            <span className="text-sm font-bold text-foreground">محلل المناقصات</span>
-                            <span className="text-[10px] text-muted-foreground">لوحة التحكم الذكية</span>
+                            <span className="text-sm font-bold text-foreground text-primary">محلل المناقصات</span>
+                            <span className="text-[10px] text-muted-foreground">لوحة التحكم </span>
                         </div>
                     </Link>
                 </div>

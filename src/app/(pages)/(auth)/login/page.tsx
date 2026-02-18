@@ -59,10 +59,10 @@ export default function LoginPage() {
                             control={form.control}
                             name="email"
                             render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel className="mb-5">البريد الإلكتروني</FormLabel>
+                                <FormItem className="space-y-6">
+                                    <FormLabel className="text-base font-semibold mb-2 block">البريد الإلكتروني</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="name@example.com" {...field} />
+                                        <Input className="h-14" placeholder="name@example.com" {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -72,10 +72,10 @@ export default function LoginPage() {
                             control={form.control}
                             name="password"
                             render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>كلمة المرور</FormLabel>
+                                <FormItem className="space-y-6">
+                                    <FormLabel className="text-base font-semibold mb-2 block">كلمة المرور</FormLabel>
                                     <FormControl>
-                                        <Input type="password" placeholder="********" {...field} />
+                                        <Input className="h-14" type="password" placeholder="********" {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>

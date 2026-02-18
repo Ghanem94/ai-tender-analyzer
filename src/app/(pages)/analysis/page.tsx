@@ -22,7 +22,7 @@ export default function AnalysisPage() {
 
                 <div className="mt-auto pt-8">
                     <p className="text-xs text-center text-muted-foreground dir-ltr">
-                        © 2024 جميع الحقوق محفوظة - صنع بمناسبة الرؤية
+                        © 2026 جميع الحقوق محفوظة
                     </p>
                 </div>
             </main>

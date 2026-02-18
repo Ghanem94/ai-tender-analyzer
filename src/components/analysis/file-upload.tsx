@@ -1,18 +1,24 @@
 "use client"
 
 import { useState, useCallback } from "react"
-import { UploadCloud, FileText, X } from "lucide-react"
+import { UploadCloud, FileText, X, Loader2, AlertCircle } from "lucide-react"
 import { useDropzone } from "react-dropzone"
+import { useRouter } from "next/navigation"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
 export function FileUpload() {
+    const router = useRouter()
     const [file, setFile] = useState<File | null>(null)
+    const [isUploading, setIsUploading] = useState(false)
+    const [uploadError, setUploadError] = useState<string | null>(null)
 
     const onDrop = useCallback((acceptedFiles: File[]) => {
         if (acceptedFiles.length > 0) {
             setFile(acceptedFiles[0])
+            setUploadError(null)
         }
     }, [])
 
@@ -27,10 +33,61 @@ export function FileUpload() {
 
     const removeFile = () => {
         setFile(null)
+        setUploadError(null)
+    }
+
+    const handleUpload = async () => {
+        if (!file) return
+
+        setIsUploading(true)
+        setUploadError(null)
+
+        const formData = new FormData()
+        formData.append('file', file)
+
+        try {
+            const response = await fetch('https://biliteral-penni-thriftily.ngrok-free.dev/webhook-test/get_file', {
+                method: 'POST',
+                body: formData,
+            })
+
+            response.json().then(data => {
+                console.log("============= | Data | =============");
+                console.log(data)
+            })
+
+
+
+
+            if (!response.ok) {
+                throw new Error('فشل رفع الملف. يرجى المحاولة مرة أخرى.')
+            }
+
+            // Ensure we handle response if needed, but for now redirect
+            // const data = await response.json() 
+            // In a real scenario, use data.id or similar for the redirect
+
+            router.push('/results/1')
+        } catch (error) {
+            console.error('Upload error:', error)
+            setUploadError('حدث خطأ أثناء رفع الملف. يرجى التأكد من الاتصال ومحاولة مرة أخرى.')
+        } finally {
+            setIsUploading(false)
+        }
     }
 
     return (
-        <div className="w-full max-w-3xl mx-auto">
+        <div className="w-full max-w-3xl mx-auto space-y-4">
+            {uploadError && (
+                <Alert variant="destructive">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertTitle>خطأ</AlertTitle>
+                    <AlertDescription>
+                        {uploadError}
+                    </AlertDescription>
+                </Alert>
+            )}
+
             {!file ? (
                 <div
                     {...getRootProps()}
@@ -60,11 +117,18 @@ export function FileUpload() {
                     </p>
 
                     <div className="flex gap-4">
-                        <Button onClick={removeFile} variant="outline" className="min-w-[120px]">
+                        <Button onClick={removeFile} variant="outline" className="min-w-[120px]" disabled={isUploading}>
                             إلغاء
                         </Button>
-                        <Button className="min-w-[120px]">
-                            بدء التحليل
+                        <Button onClick={handleUpload} className="min-w-[120px]" disabled={isUploading}>
+                            {isUploading ? (
+                                <>
+                                    <Loader2 className="ml-2 h-4 w-4 animate-spin" />
+                                    جاري التحليل...
+                                </>
+                            ) : (
+                                "بدء التحليل"
+                            )}
                         </Button>
                     </div>
                 </div>

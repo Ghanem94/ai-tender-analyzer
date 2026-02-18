@@ -19,7 +19,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ar" dir="rtl" className={cairo.variable}>
+    <html lang="ar" dir="rtl" className={`${cairo.variable} scroll-smooth`}>
       <body className="antialiased bg-background text-foreground font-cairo">
         {children}
       </body>
