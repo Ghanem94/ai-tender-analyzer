@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { LayoutDashboard, Users, MessageSquare, LogOut, Settings, ShieldCheck } from "lucide-react"
 
 import { cn } from "@/lib/utils"
@@ -11,9 +11,16 @@ interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> { }
 
 export function AdminSidebar({ className }: SidebarProps) {
     const pathname = usePathname()
+    const router = useRouter()
+
+    async function handleLogout() {
+        await fetch("/api/auth/logout", { method: "POST" })
+        router.push("/")
+    }
 
     const navItems = [
         { href: "/admin", label: "نظرة عامة", icon: LayoutDashboard },
+        { href: "/admin/users", label: "المستخدمين", icon: Users },
         { href: "/admin/subscriptions", label: "الاشتراكات", icon: Users },
         { href: "/admin/tickets", label: "الدعم الفني", icon: MessageSquare },
     ]
@@ -56,11 +63,26 @@ export function AdminSidebar({ className }: SidebarProps) {
                         الإعدادات
                     </h2>
                     <div className="space-y-1">
-                        <Button variant="ghost" className="w-full justify-start gap-3 h-12 text-base rounded-xl text-muted-foreground hover:bg-muted/50 hover:text-foreground">
-                            <Settings className="h-5 w-5" />
-                            الإعدادات العامة
+                        <Button
+                            variant={pathname === "/admin/settings" ? "secondary" : "ghost"}
+                            className={cn(
+                                "w-full justify-start gap-3 h-12 text-base rounded-xl",
+                                pathname === "/admin/settings"
+                                    ? "bg-primary/10 text-primary hover:bg-primary/15 font-semibold"
+                                    : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                            )}
+                            asChild
+                        >
+                            <Link href="/admin/settings">
+                                <Settings className="h-5 w-5" />
+                                الإعدادات العامة
+                            </Link>
                         </Button>
-                        <Button variant="ghost" className="w-full justify-start gap-3 h-12 text-base rounded-xl text-destructive/80 hover:text-destructive hover:bg-destructive/10">
+                        <Button
+                            variant="ghost"
+                            className="w-full justify-start gap-3 h-12 text-base rounded-xl text-destructive/80 hover:text-destructive hover:bg-destructive/10"
+                            onClick={handleLogout}
+                        >
                             <LogOut className="h-5 w-5" />
                             تسجيل الخروج
                         </Button>

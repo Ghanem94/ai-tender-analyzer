@@ -28,7 +28,7 @@ export default function DashboardPage() {
             </main>
             <div className="py-8">
                 <p className="text-xs text-center text-muted-foreground dir-ltr">
-                    © 2026 جميع الحقوق محفوظة - صنع بمناسبة الرؤية
+                    © 2026 صنع بمناسبة الرؤية
                 </p>
             </div>
         </div>

@@ -1,97 +1,139 @@
-import { Check } from "lucide-react"
+"use client"
+
+import { Check, Gift, Star, Crown, Building2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from "@/components/ui/card"
-import Link from "next/link"
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card"
+import { useAuthModal } from "@/components/providers/modal-provider"
+import { cn } from "@/lib/utils"
 
 const plans = [
     {
-        name: "الأساسية",
-        price: "50",
-        description: "للأفراد والشركات الناشئة",
-        features: ["تحليل 5 وثائق شهرياً", "دعم ملفات PDF", "ملخص أساسي للمخاطر"],
-        cta: "اشترك الآن",
-        href: "/register?plan=basic",
+        name: "المجانية",
+        price: "0",
+        files: "1 ملف واحد فقط",
+        icon: Gift,
+        cta: "ابدأ الآن مجاناً",
         popular: false,
     },
     {
-        name: "المتقدمة",
-        price: "100",
-        description: "للشركات المتوسطة والمحترفين",
-        features: [
-            "تحليل 20 وثيقة شهرياً",
-            "دعم PDF & Word",
-            "تحليل قانوني معمق",
-            "تصدير PDF & Excel",
-            "دعم فني مباشر",
-        ],
+        name: "الأساسية",
+        price: "25",
+        files: "5 ملفات",
+        icon: Star,
         cta: "اشترك الآن",
-        href: "/register?plan=pro",
-        popular: true,
+        popular: false,
     },
     {
-        name: "المؤسسات",
-        price: "اتصل بنا",
-        description: "للشركات الكبرى والجهات الحكومية",
-        features: ["تحليل غير محدود", "API Access", "تدريب فريق العمل", "مدير حساب خاص", "تخصيص كامل"],
-        cta: "تواصل معنا",
-        href: "/contact",
+        name: "القياسية",
+        price: "50",
+        files: "10 ملفات",
+        icon: Crown,
+        cta: "اشترك الآن",
+        popular: true,
+        badge: "الأكثر شيوعاً"
+    },
+    {
+        name: "باقة الشركات",
+        price: "100",
+        files: "20 ملف",
+        icon: Building2,
+        cta: "اشترك الآن",
         popular: false,
     },
 ]
 
 export function Pricing() {
+    const { openRegister } = useAuthModal()
+
     return (
-        <section id="pricing" className="py-20 md:py-28 bg-muted/30">
-            <div className="container">
-                <div className="text-center mb-16">
-                    <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-                        اختر الخطة <span className="text-primary">المناسبة لك</span>
+        <section id="pricing" className="py-24 bg-[#FDFCF9] font-sans" dir="rtl">
+            <div className="container mx-auto px-4 md:px-8 max-w-7xl">
+                <div className="text-center mb-16 space-y-4">
+                    <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight text-[#1A1A1A]">
+                        اختر الباقة <span className="text-[#9A8D59]">المناسبة لاحتياجاتك</span>
                     </h2>
-                    <p className="mt-4 text-lg text-muted-foreground">
-                        أسعار مرنة تناسب الشركات الناشئة وحتى الجهات الحكومية.
+                    <p className="text-lg md:text-xl text-[#7D7D7D] max-w-2xl mx-auto font-medium">
+                        أسعار مرنة وباقات مصممة لتناسب الأفراد والشركات بمختلف أحجامها.
                     </p>
                 </div>
-                <div className="grid grid-cols-1 gap-8 md:grid-cols-3 lg:gap-12 items-center">
-                    {plans.map((plan, index) => (
-                        <Card
-                            key={index}
-                            className={`relative flex flex-col ${plan.popular ? 'border-primary shadow-lg scale-105 z-10' : 'border-border shadow-sm'}`}
-                        >
-                            {plan.popular && (
-                                <div className="absolute -top-4 left-1/2 -translate-x-1/2 rounded-full bg-primary px-4 py-1 text-sm font-medium text-primary-foreground">
-                                    الأكثر طلباً
-                                </div>
-                            )}
-                            <CardHeader className="text-center pb-8 pt-10">
-                                <CardTitle className="text-xl mb-2">{plan.name}</CardTitle>
-                                <div className="text-4xl font-bold mb-2">
-                                    {plan.price !== "اتصل بنا" && <span className="text-xl font-normal align-top">$</span>}
-                                    {plan.price}
-                                    {plan.price !== "اتصل بنا" && <span className="text-base font-normal text-muted-foreground">/شهر</span>}
-                                </div>
-                                <CardDescription>{plan.description}</CardDescription>
-                            </CardHeader>
-                            <CardContent className="flex-1">
-                                <ul className="flex flex-col gap-3 text-sm">
-                                    {plan.features.map((feature, i) => (
-                                        <li key={i} className="flex items-center">
-                                            <Check className="ml-2 h-4 w-4 text-primary shrink-0" />
-                                            {feature}
-                                        </li>
-                                    ))}
-                                </ul>
-                            </CardContent>
-                            <CardFooter className="pt-8">
-                                <Button
-                                    className="w-full rounded-full"
-                                    variant={plan.popular ? "default" : "outline"}
-                                    asChild
-                                >
-                                    <Link href={plan.href}>{plan.cta}</Link>
-                                </Button>
-                            </CardFooter>
-                        </Card>
-                    ))}
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 xl:gap-8 items-start">
+                    {plans.map((plan, index) => {
+                        const Icon = plan.icon;
+                        return (
+                            <Card
+                                key={index}
+                                className={cn(
+                                    "relative flex flex-col bg-white rounded-3xl overflow-hidden transition-all duration-300",
+                                    plan.popular
+                                        ? "border-2 border-[#9A8D59] shadow-[0_8px_30px_rgb(154,141,89,0.15)] md:-translate-y-4 z-10"
+                                        : "border-[#E6E4DF] shadow-sm hover:shadow-md hover:-translate-y-1"
+                                )}
+                            >
+                                {plan.popular && (
+                                    <div className="absolute top-0 inset-x-0 flex justify-center object-top">
+                                        <div className="bg-[#9A8D59] text-white text-xs font-bold py-1.5 px-4 rounded-b-xl shadow-sm">
+                                            {plan.badge}
+                                        </div>
+                                    </div>
+                                )}
+
+                                <CardHeader className={cn("text-center pb-6", plan.popular ? "pt-12" : "pt-8")}>
+                                    <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#9A8D59]/10 mb-4 text-[#9A8D59]">
+                                        <Icon className="h-7 w-7" />
+                                    </div>
+                                    <CardTitle className="text-2xl font-bold text-[#1A1A1A] mb-2">{plan.name}</CardTitle>
+                                    <div className="flex items-baseline justify-center gap-1.5 text-[#1A1A1A]">
+                                        <span className="text-5xl font-extrabold">{plan.price}</span>
+                                        <span className="text-xl font-bold text-[#7D7D7D]">ريال</span>
+                                    </div>
+                                </CardHeader>
+
+                                <CardContent className="flex-1 px-6 pb-6 pt-0 space-y-6">
+                                    <div className="space-y-4">
+                                        <div className="flex items-start gap-3 bg-gray-50 rounded-xl p-3 border border-gray-100">
+                                            <Check className="h-5 w-5 text-[#9A8D59] shrink-0 mt-0.5" />
+                                            <span className="text-[15px] font-bold text-[#4A4A4A]">{plan.files}</span>
+                                        </div>
+                                        <div className="flex items-start gap-3 px-3">
+                                            <Check className="h-5 w-5 text-[#9A8D59] shrink-0 mt-0.5" />
+                                            <span className="text-[15px] font-semibold text-[#7D7D7D]">
+                                                الحد الأقصى: 100 صفحة للملف الواحد
+                                            </span>
+                                        </div>
+                                        <div className="flex items-start gap-3 px-3">
+                                            <Check className="h-5 w-5 text-[#9A8D59] shrink-0 mt-0.5" />
+                                            <span className="text-[15px] font-semibold text-[#7D7D7D]">
+                                                تحليل قانوني دقيق
+                                            </span>
+                                        </div>
+                                    </div>
+                                </CardContent>
+
+                                <CardFooter className="px-6 pb-8 pt-0 mt-auto">
+                                    <Button
+                                        className={cn(
+                                            "w-full rounded-2xl h-12 text-[16px] font-bold shadow-sm transition-all duration-200",
+                                            plan.popular
+                                                ? "bg-[#9A8D59] hover:bg-[#8A7D49] text-white hover:shadow-md hover:-translate-y-0.5"
+                                                : "bg-[#F8F9FA] hover:bg-[#E6E4DF] text-[#1A1A1A] border border-[#E6E4DF]"
+                                        )}
+                                        onClick={openRegister}
+                                    >
+                                        {plan.cta}
+                                    </Button>
+                                </CardFooter>
+                            </Card>
+                        )
+                    })}
+                </div>
+
+                {/* Bottom Note */}
+                <div className="mt-16 text-center">
+                    <div className="inline-flex items-center justify-center gap-2 bg-[#9A8D59]/5 border border-[#9A8D59]/20 rounded-full py-3 px-6 text-sm font-bold text-[#7D7D7D]">
+                        <span className="w-2 h-2 rounded-full bg-[#9A8D59] animate-pulse"></span>
+                        للملفات التي تزيد عن 100 صفحة، يرجى التواصل مع الدعم الفني للحصول على تسعيرة خاصة.
+                    </div>
                 </div>
             </div>
         </section>

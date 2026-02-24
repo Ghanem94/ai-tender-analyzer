@@ -44,33 +44,25 @@ export function FileUpload() {
 
         const formData = new FormData()
         formData.append('file', file)
+        formData.append('fileName', file.name)
+        formData.append('fileType', file.type)
 
         try {
-            const response = await fetch('https://biliteral-penni-thriftily.ngrok-free.dev/webhook-test/get_file', {
+            const response = await fetch('/api/analysis', {
                 method: 'POST',
                 body: formData,
             })
 
-            response.json().then(data => {
-                console.log("============= | Data | =============");
-                console.log(data)
-            })
-
-
-
+            const data = await response.json()
 
             if (!response.ok) {
-                throw new Error('فشل رفع الملف. يرجى المحاولة مرة أخرى.')
+                throw new Error(data.message || 'فشل رفع الملف. يرجى المحاولة مرة أخرى.')
             }
 
-            // Ensure we handle response if needed, but for now redirect
-            // const data = await response.json() 
-            // In a real scenario, use data.id or similar for the redirect
-
-            router.push('/results/1')
-        } catch (error) {
+            router.push(`/results/${data.analysisId}`)
+        } catch (error: any) {
             console.error('Upload error:', error)
-            setUploadError('حدث خطأ أثناء رفع الملف. يرجى التأكد من الاتصال ومحاولة مرة أخرى.')
+            setUploadError(error.message || 'حدث خطأ أثناء رفع الملف. يرجى التأكد من الاتصال ومحاولة مرة أخرى.')
         } finally {
             setIsUploading(false)
         }

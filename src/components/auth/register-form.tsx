@@ -2,21 +2,11 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form"
-import { registerSchema, RegisterFormData } from "@/lib/validations/auth"
+import { Label } from "@/components/ui/label"
 
 interface RegisterFormProps {
     onSuccess?: () => void
@@ -26,105 +16,144 @@ interface RegisterFormProps {
 export function RegisterForm({ onSuccess, onShowLogin }: RegisterFormProps) {
     const router = useRouter()
     const [isLoading, setIsLoading] = useState(false)
+    const [error, setError] = useState<string | null>(null)
+    const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
 
-    const form = useForm<RegisterFormData>({
-        resolver: zodResolver(registerSchema),
-        defaultValues: {
-            name: "",
-            email: "",
-            password: "",
-            confirmPassword: "",
-        },
+    const [formData, setFormData] = useState({
+        name: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
     })
 
-    async function onSubmit(data: RegisterFormData) {
+    function validate() {
+        const errors: Record<string, string> = {}
+
+        if (formData.name.length < 2) {
+            errors.name = "الاسم يجب أن يكون حرفين على الأقل"
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        if (!emailRegex.test(formData.email)) {
+            errors.email = "البريد الإلكتروني غير صالح"
+        }
+
+        if (formData.password.length < 8) {
+            errors.password = "كلمة المرور يجب أن تكون 8 أحرف على الأقل"
+        }
+
+        if (!formData.confirmPassword) {
+            errors.confirmPassword = "تأكيد كلمة المرور مطلوب"
+        } else if (formData.password !== formData.confirmPassword) {
+            errors.confirmPassword = "كلمات المرور غير متطابقة"
+        }
+
+        setFieldErrors(errors)
+        return Object.keys(errors).length === 0
+    }
+
+    async function handleSubmit(e: React.FormEvent) {
+        e.preventDefault()
+        setError(null)
+
+        if (!validate()) return
+
         setIsLoading(true)
 
-        // Simulate API call
-        setTimeout(() => {
-            console.log("Register data:", data)
-            setIsLoading(false)
-            // For demo purposes, redirect to analysis
-            router.push("/analysis")
-            if (onSuccess) {
-                onSuccess()
+        try {
+            const response = await fetch("/api/auth/register", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(formData),
+            })
+
+            const result = await response.json()
+
+            if (!response.ok) {
+                setError(result.message)
+                return
             }
-        }, 1500)
+
+            if (onSuccess) onSuccess()
+
+            if (result.user.role === "ADMIN") {
+                router.push("/admin")
+            } else {
+                router.push("/analysis")
+            }
+        } catch (err) {
+            console.error("Registration failed", err)
+            setError("حدث خطأ غير متوقع")
+        } finally {
+            setIsLoading(false)
+        }
     }
 
     return (
-        <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel className="mb-3">الاسم الكامل</FormLabel>
-                            <FormControl>
-                                <Input placeholder="الاسم" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
+        <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+                <Label className="block pb-2">الاسم الكامل</Label>
+                <Input
+                    placeholder="الاسم"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 />
-                <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel className="mb-3">البريد الإلكتروني</FormLabel>
-                            <FormControl>
-                                <Input placeholder="name@example.com" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="password"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel className="mb-3">كلمة المرور</FormLabel>
-                            <FormControl>
-                                <Input type="password" placeholder="********" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="confirmPassword"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel className="mb-3">تأكيد كلمة المرور</FormLabel>
-                            <FormControl>
-                                <Input type="password" placeholder="********" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <Button className="w-full mt-2" type="submit" disabled={isLoading}>
-                    {isLoading && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
-                    إنشاء الحساب
-                </Button>
+                {fieldErrors.name && <p className="text-sm text-red-500">{fieldErrors.name}</p>}
+            </div>
 
-                <div className="text-center text-sm">
-                    <p className="text-muted-foreground">
-                        لديك حساب بالفعل؟{" "}
-                        <button
-                            type="button"
-                            onClick={onShowLogin}
-                            className="font-bold text-primary hover:underline"
-                        >
-                            سجل دخولك
-                        </button>
-                    </p>
-                </div>
-            </form>
-        </Form>
+            <div className="space-y-2">
+                <Label className="block pb-2">البريد الإلكتروني</Label>
+                <Input
+                    placeholder="name@example.com"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                />
+                {fieldErrors.email && <p className="text-sm text-red-500">{fieldErrors.email}</p>}
+            </div>
+
+            <div className="space-y-2">
+                <Label className="block pb-2">كلمة المرور</Label>
+                <Input
+                    type="password"
+                    placeholder="********"
+                    value={formData.password}
+                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                />
+                {fieldErrors.password && <p className="text-sm text-red-500">{fieldErrors.password}</p>}
+            </div>
+
+            <div className="space-y-2">
+                <Label className="block pb-2">تأكيد كلمة المرور</Label>
+                <Input
+                    type="password"
+                    placeholder="********"
+                    value={formData.confirmPassword}
+                    onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                />
+                {fieldErrors.confirmPassword && <p className="text-sm text-red-500">{fieldErrors.confirmPassword}</p>}
+            </div>
+
+            {error && (
+                <p className="text-sm text-red-500 text-center">{error}</p>
+            )}
+
+            <Button className="w-full mt-2" type="submit" disabled={isLoading}>
+                {isLoading && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
+                إنشاء الحساب
+            </Button>
+
+            <div className="text-center text-sm">
+                <p className="text-muted-foreground">
+                    لديك حساب بالفعل؟{" "}
+                    <button
+                        type="button"
+                        onClick={onShowLogin}
+                        className="font-bold text-primary hover:underline"
+                    >
+                        سجل دخولك
+                    </button>
+                </p>
+            </div>
+        </form>
     )
 }

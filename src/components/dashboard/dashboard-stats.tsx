@@ -1,4 +1,7 @@
-import { AlertCircle, BarChart3, FileCheck, FileText } from "lucide-react"
+"use client"
+
+import { useEffect, useState } from "react"
+import { AlertCircle, BarChart3, FileCheck, FileText, Loader2 } from "lucide-react"
 
 interface StatCardProps {
     title: string
@@ -21,30 +24,61 @@ function StatCard({ title, value, icon, iconBgClass }: StatCardProps) {
     )
 }
 
+interface Analysis {
+    id: string
+    riskScore: number | null
+    status: string
+}
+
 export function DashboardStats() {
+    const [analyses, setAnalyses] = useState<Analysis[]>([])
+    const [isLoading, setIsLoading] = useState(true)
+
+    useEffect(() => {
+        async function fetchAnalyses() {
+            try {
+                const response = await fetch("/api/analysis")
+                if (response.ok) {
+                    const data = await response.json()
+                    setAnalyses(data)
+                }
+            } catch (error) {
+                console.error("Failed to fetch analyses", error)
+            } finally {
+                setIsLoading(false)
+            }
+        }
+        fetchAnalyses()
+    }, [])
+
+    const total = analyses.length
+    const highRisk = analyses.filter((a) => a.riskScore !== null && a.riskScore < 40).length
+    const mediumRisk = analyses.filter((a) => a.riskScore !== null && a.riskScore >= 40 && a.riskScore < 70).length
+    const lowRisk = analyses.filter((a) => a.riskScore !== null && a.riskScore >= 70).length
+
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
             <StatCard
                 title="مخاطرة عالية"
-                value="0"
+                value={isLoading ? "..." : String(highRisk)}
                 icon={<AlertCircle className="w-6 h-6" />}
                 iconBgClass="bg-red-500"
             />
             <StatCard
                 title="مخاطرة متوسطة"
-                value="0"
+                value={isLoading ? "..." : String(mediumRisk)}
                 icon={<BarChart3 className="w-6 h-6" />}
                 iconBgClass="bg-yellow-500"
             />
             <StatCard
                 title="مخاطرة منخفضة"
-                value="0"
+                value={isLoading ? "..." : String(lowRisk)}
                 icon={<FileCheck className="w-6 h-6" />}
                 iconBgClass="bg-emerald-500"
             />
             <StatCard
                 title="إجمالي العمليات"
-                value="0"
+                value={isLoading ? "..." : String(total)}
                 icon={<FileText className="w-6 h-6" />}
                 iconBgClass="bg-blue-600"
             />

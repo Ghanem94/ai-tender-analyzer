@@ -1,6 +1,6 @@
 "use client"
 
-import { Users, CreditCard, Activity, TrendingUp, DollarSign } from "lucide-react"
+import { Users, CreditCard, Activity, DollarSign } from "lucide-react"
 import {
     Bar,
     BarChart,
@@ -20,6 +20,7 @@ import {
     CardTitle,
     CardDescription,
 } from "@/components/ui/card"
+import { Database, Zap, Coins } from "lucide-react"
 
 const overviewData = [
     { name: "يناير", total: 1500 },
@@ -45,7 +46,6 @@ const activityData = [
     { time: "20:00", value: 900 },
     { time: "23:59", value: 600 },
 ]
-
 
 export default function AdminDashboard() {
     return (
@@ -113,6 +113,57 @@ export default function AdminDashboard() {
                         <div className="text-3xl font-bold text-foreground">+573</div>
                         <p className="text-xs font-medium text-emerald-500 flex items-center mt-1">
                             +201 <span className="text-muted-foreground mr-1">منذ الساعة الوراء</span>
+                        </p>
+                    </CardContent>
+                </Card>
+            </div>
+
+            <div className="grid gap-6 md:grid-cols-3">
+                <Card className="hover:shadow-lg transition-shadow duration-300 border-border/50 bg-card/50 backdrop-blur-sm">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium text-muted-foreground">
+                            إجمالي التوكنات المستهلكة
+                        </CardTitle>
+                        <div className="p-2 bg-indigo-500/10 rounded-full text-indigo-500">
+                            <Zap className="h-4 w-4" />
+                        </div>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-3xl font-bold text-foreground">1.2M</div>
+                        <p className="text-xs font-medium text-emerald-500 flex items-center mt-1">
+                            +12.5% <span className="text-muted-foreground mr-1">من الشهر الماضي</span>
+                        </p>
+                    </CardContent>
+                </Card>
+                <Card className="hover:shadow-lg transition-shadow duration-300 border-border/50 bg-card/50 backdrop-blur-sm">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium text-muted-foreground">
+                            تكلفة الـ API التقديرية (LLM)
+                        </CardTitle>
+                        <div className="p-2 bg-rose-500/10 rounded-full text-rose-500">
+                            <Database className="h-4 w-4" />
+                        </div>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-3xl font-bold text-foreground">$450.00</div>
+                        <p className="text-xs font-medium text-rose-500 flex items-center mt-1">
+                            +5% <span className="text-muted-foreground mr-1">عن الميزانية</span>
+                        </p>
+                    </CardContent>
+                </Card>
+                <Card className="hover:shadow-lg transition-shadow duration-300 border-border/50 bg-card/50 backdrop-blur-sm">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium text-muted-foreground">
+                            الرصيد المتاح للعملاء
+                        </CardTitle>
+                        <div className="p-2 bg-amber-500/10 rounded-full text-amber-500">
+                            <Coins className="h-4 w-4" />
+                        </div>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-3xl font-bold text-foreground">15,430 ملف</div>
+                        <p className="text-xs font-medium text-muted-foreground mt-1 text-right">
+                            إجمالي الملفات غير المستهلكة
                         </p>
                     </CardContent>
                 </Card>
