@@ -13,7 +13,7 @@ export function Navbar() {
             <div className="container flex h-16 items-center justify-between">
 
                 <div className="flex items-center gap-2">
-                    <Link href="/dashboard" className="flex items-center gap-2">
+                    <Link href="/" className="flex items-center gap-2">
                         <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary/10 text-primary">
                             <LayoutDashboard className="h-5 w-5" />
                         </div>

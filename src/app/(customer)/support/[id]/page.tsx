@@ -6,7 +6,7 @@ import { DashboardHeader } from "@/components/shared/dashboard-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Clock, CheckCircle2, AlertCircle, ArrowRight } from "lucide-react";
-import { getStatusBadge } from "../page";
+import { StatusBadge } from "@/components/shared/status-badge";
 
 // We'll reuse the mock data for now, ideally this would come from an API
 type TicketType = {
@@ -17,6 +17,7 @@ type TicketType = {
     category: string;
     description: string;
     reply: string | null;
+    image?: string;
 };
 
 const recentTickets: TicketType[] = [
@@ -25,9 +26,10 @@ const recentTickets: TicketType[] = [
         subject: "مشكلة في تحميل التقرير",
         date: "2026-02-24",
         status: "قيد الانتظار",
-        category: "استفسار تقني",
         description: "حاولت تحميل تقرير المناقصة رقم 1234 ولكن تظهر لي رسالة خطأ متعلقة بالسيرفر.",
-        reply: null
+        reply: null,
+        image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=1000",
+        category: "استفسار تقني",
     },
     {
         id: "TKT-002",
@@ -36,7 +38,7 @@ const recentTickets: TicketType[] = [
         status: "مكتمل",
         category: "استفسار عام",
         description: "هل يتضمن التحليل القانوني مراجعة شروط الضمان الابتدائي؟",
-        reply: "نعم، النظام يقوم بتحليل كافة الشروط القانونية بما فيها متطلبات الضمان البنكي بأنواعه."
+        reply: "نعم، النظام يقوم بتحليل كافة الشروط القانونية بما فيها متطلبات الضمان البنكي بأنواعه.",
     },
     {
         id: "TKT-003",
@@ -45,7 +47,7 @@ const recentTickets: TicketType[] = [
         status: "مكتمل",
         category: "إدارة الحساب",
         description: "أرغب بتغيير اسم الشركة المرتبط بحسابي.",
-        reply: "تم تحديث اسم الشركة بنجاح كما طلبتم."
+        reply: "تم تحديث اسم الشركة بنجاح كما طلبتم.",
     },
     {
         id: "TKT-004",
@@ -54,10 +56,9 @@ const recentTickets: TicketType[] = [
         status: "مكتمل",
         category: "استفسار تقني",
         description: "لا أستطيع رؤية العمليات السابقة في لوحة التحكم.",
-        reply: "تم حل المشكلة وتحديث السيرفرات، يرجى إعادة تحميل الصفحة."
+        reply: "تم حل المشكلة وتحديث السيرفرات، يرجى إعادة تحميل الصفحة.",
     },
 ];
-
 
 export default function TicketDetailsPage() {
     const params = useParams();
@@ -68,7 +69,6 @@ export default function TicketDetailsPage() {
 
     useEffect(() => {
         if (!ticket) {
-            // Handle not found (could redirect back to /support)
             router.push("/support");
         }
     }, [ticket, router]);
@@ -90,7 +90,6 @@ export default function TicketDetailsPage() {
             <DashboardHeader />
             <main className="flex-1 p-4 md:p-8 container mx-auto max-w-7xl">
                 <div className="space-y-6 max-w-5xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    {/* Header & Actions */}
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-[#E6E4DF]/50">
                         <div className="flex items-center gap-4">
                             <Button
@@ -107,9 +106,7 @@ export default function TicketDetailsPage() {
                         </div>
                     </div>
 
-                    {/* Ticket Main Card */}
                     <Card className="rounded-[1.5rem] border-[#E6E4DF] shadow-sm overflow-hidden bg-white">
-                        {/* Ticket Header Banner */}
                         <div className="bg-[#FDFCF9] border-b border-[#E6E4DF]/60 p-6 md:p-8">
                             <div className="space-y-4">
                                 <div className="flex items-start justify-between">
@@ -133,7 +130,7 @@ export default function TicketDetailsPage() {
                                         </div>
                                     </div>
                                     <div className="shrink-0 flex items-center gap-3">
-                                        {getStatusBadge(ticket.status)}
+                                        <StatusBadge status={ticket.status} className="bg-opacity-10 shadow-none" />
                                     </div>
                                 </div>
                             </div>
@@ -152,6 +149,17 @@ export default function TicketDetailsPage() {
                                 <div className="bg-[#F8F9FA] border border-[#E6E4DF]/60 p-6 rounded-2xl text-[15px] leading-relaxed text-[#4A4A4A] mr-10 relative before:content-[''] before:absolute before:-right-[21px] before:top-6 before:w-[21px] before:h-px before:bg-[#E6E4DF]/60">
                                     {ticket.description}
                                 </div>
+                                {ticket.image && (
+                                    <div className="mr-10 mt-4 rounded-xl overflow-hidden border border-[#E6E4DF] shadow-sm max-w-sm">
+                                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                                        <img
+                                            src={ticket.image}
+                                            alt="مرفق التذكرة"
+                                            className="w-full h-auto object-cover max-h-[300px] hover:scale-105 transition-transform duration-300 cursor-pointer"
+                                            onClick={() => window.open(ticket.image, '_blank')}
+                                        />
+                                    </div>
+                                )}
                             </div>
 
                             {/* Support Reply Area */}

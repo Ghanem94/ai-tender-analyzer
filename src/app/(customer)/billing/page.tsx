@@ -13,6 +13,8 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
+import { DataTable, ColumnDef } from "@/components/shared/data-table"
+import { StatusBadge } from "@/components/shared/status-badge"
 
 import { WalletCards, Receipt, Download, FileText, Sparkles, ArrowLeft } from "lucide-react"
 import Link from "next/link"
@@ -45,12 +47,6 @@ const transactions = [
     },
 ]
 
-function getStatusBadge(status: string) {
-    if (status === "مكتمل") {
-        return <Badge className="bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20 shadow-none border-none px-3">مكتمل</Badge>
-    }
-    return <Badge className="bg-amber-500/10 text-amber-500 hover:bg-amber-500/20 shadow-none border-none px-3">معلق</Badge>
-}
 
 export default function BillingPage() {
 
@@ -153,45 +149,52 @@ export default function BillingPage() {
                     </CardHeader>
                     <CardContent className="p-0">
                         <div className="overflow-x-auto">
-                            <Table>
-                                <TableHeader>
-                                    <TableRow className="bg-[#FDFCF9] hover:bg-[#FDFCF9] border-b-[#E6E4DF]/50 text-[#7D7D7D] font-bold">
-                                        <TableHead className="text-right font-bold w-[120px] rounded-tr-2xl">التاريخ</TableHead>
-                                        <TableHead className="text-right font-bold w-[250px]">الوصف</TableHead>
-                                        <TableHead className="text-right font-bold">المبلغ</TableHead>
-                                        <TableHead className="text-right font-bold">الرصيد</TableHead>
-                                        <TableHead className="text-right font-bold">الحالة</TableHead>
-                                        <TableHead className="text-left font-bold w-[120px] rounded-tl-2xl">الفاتورة</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {transactions.map((tx) => (
-                                        <TableRow key={tx.id} className="border-b-[#E6E4DF]/30 hover:bg-[#F8F9FA]/50 transition-colors">
-                                            <TableCell className="text-[#7D7D7D] text-sm">{tx.date}</TableCell>
-                                            <TableCell className="font-medium text-[#4A4A4A]">{tx.description}</TableCell>
-                                            <TableCell className="font-mono font-bold text-[#1A1A1A]">{tx.amount}</TableCell>
-                                            <TableCell>
-                                                <Badge variant="outline" className={tx.credit.startsWith('+') ? "bg-emerald-500/10 text-emerald-500 border-none px-3" : "bg-gray-100 text-gray-500 border-none px-3"}>
-                                                    {tx.credit}
-                                                </Badge>
-                                            </TableCell>
-                                            <TableCell>
-                                                {getStatusBadge(tx.status)}
-                                            </TableCell>
-                                            <TableCell className="text-left">
-                                                {tx.amount !== "-" ? (
-                                                    <Button variant="ghost" size="sm" className="h-8 gap-1 text-primary hover:bg-primary/10 hover:text-primary">
-                                                        <Download className="w-3.5 h-3.5" />
-                                                        <span className="text-xs">PDF</span>
-                                                    </Button>
-                                                ) : (
-                                                    <span className="text-xs text-muted-foreground px-4">-</span>
-                                                )}
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
+                            <DataTable
+                                data={transactions}
+                                columns={[
+                                    { header: "التاريخ", accessorKey: "date" },
+                                    { header: "الوصف", accessorKey: "description" },
+                                    {
+                                        header: "المبلغ",
+                                        cell: (item) => <span className="font-mono font-bold text-[#1A1A1A]">{item.amount}</span>
+                                    },
+                                    {
+                                        header: "الرصيد",
+                                        cell: (item) => (
+                                            <Badge variant="outline" className={item.credit.startsWith('+') ? "bg-emerald-500/10 text-emerald-500 border-none px-3" : "bg-gray-100 text-gray-500 border-none px-3"}>
+                                                {item.credit}
+                                            </Badge>
+                                        )
+                                    },
+                                    {
+                                        header: "الحالة",
+                                        cell: (item) => <StatusBadge status={item.status} className="bg-opacity-10 shadow-none px-3" />
+                                    },
+                                    {
+                                        header: "الفاتورة",
+                                        cell: (item) => item.amount !== "-" ? (
+                                            <Button variant="ghost" size="sm" className="h-8 gap-1 text-primary hover:bg-primary/10 hover:text-primary justify-start px-2">
+                                                <Download className="w-3.5 h-3.5" />
+                                                <span className="text-xs">PDF</span>
+                                            </Button>
+                                        ) : (
+                                            <span className="text-xs text-muted-foreground px-4">-</span>
+                                        )
+                                    }
+                                ]}
+                                searchKey="description"
+                                searchPlaceholder="ابحث في العمليات..."
+                                filters={[
+                                    {
+                                        column: "status",
+                                        label: "الحالة",
+                                        options: [
+                                            { label: "مكتمل", value: "مكتمل" },
+                                            { label: "معلق", value: "معلق" }
+                                        ]
+                                    }
+                                ]}
+                            />
                         </div>
                     </CardContent>
                 </Card>

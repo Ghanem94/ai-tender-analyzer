@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { useAuthModal } from "@/components/providers/modal-provider"
+import { UploadCloud } from "lucide-react"
 
 export function Hero() {
     const { openLogin } = useAuthModal()
@@ -11,7 +12,8 @@ export function Hero() {
         <section className="relative overflow-hidden bg-background pt-16 md:pt-20 lg:pt-28">
             <div className="container relative z-10 flex flex-col items-center text-center">
                 <div className="inline-flex items-center rounded-full border bg-muted/50 px-3 py-1 text-sm font-medium text-primary mb-6">
-                    <span>✨ نظام تحليل المناقصات الذكي</span>
+                    <UploadCloud className="w-5 h-5 m-2" />
+                    <span> نظام تحليل المناقصات الذكي</span>
                 </div>
                 <h1 className="max-w-4xl text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
                     حوّل تعقيد <span className="text-primary">المناقصات</span> إلى

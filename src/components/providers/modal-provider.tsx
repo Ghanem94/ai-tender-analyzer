@@ -1,7 +1,7 @@
 "use client"
 
 import React, { createContext, useContext, useState } from "react"
-import { AuthModal } from "@/components/auth/auth-modal"
+import { AuthModal } from "@/components/shared/auth/auth-modal"
 
 interface ModalContextType {
     openLogin: () => void

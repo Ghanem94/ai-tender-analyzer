@@ -7,9 +7,9 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog"
-import { LoginForm } from "@/components/auth/login-form"
-import { RegisterForm } from "@/components/auth/register-form"
-import { ForgotPasswordForm } from "@/components/auth/forgot-password-form"
+import { LoginForm } from "./login-form"
+import { RegisterForm } from "./register-form"
+import { ForgotPasswordForm } from "./forgot-password-form"
 
 interface AuthModalProps {
     isOpen: boolean

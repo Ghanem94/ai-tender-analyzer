@@ -4,6 +4,7 @@ import { useState, useCallback } from "react"
 import { UploadCloud, FileText, X, Loader2, AlertCircle } from "lucide-react"
 import { useDropzone } from "react-dropzone"
 import { useRouter } from "next/navigation"
+import { PDFDocument } from 'pdf-lib'
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -27,7 +28,6 @@ export function FileUpload() {
         maxFiles: 1,
         accept: {
             'application/pdf': ['.pdf'],
-            'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx']
         }
     })
 
@@ -42,12 +42,23 @@ export function FileUpload() {
         setIsUploading(true)
         setUploadError(null)
 
-        const formData = new FormData()
-        formData.append('file', file)
-        formData.append('fileName', file.name)
-        formData.append('fileType', file.type)
-
         try {
+            const arrayBuffer = await file.arrayBuffer()
+            const pdfDoc = await PDFDocument.load(arrayBuffer)
+            const pageCount = pdfDoc.getPageCount()
+
+            if (pageCount > 100) {
+                setUploadError('حجم الملف يتجاوز الحد المسموح به (100 صفحة).')
+                setIsUploading(false)
+                return
+            }
+
+            const formData = new FormData()
+            formData.append('file', file)
+            formData.append('fileName', file.name)
+            formData.append('fileType', file.type)
+            formData.append('pageCount', pageCount.toString())
+
             const response = await fetch('/api/analysis', {
                 method: 'POST',
                 body: formData,
@@ -57,6 +68,10 @@ export function FileUpload() {
 
             if (!response.ok) {
                 throw new Error(data.message || 'فشل رفع الملف. يرجى المحاولة مرة أخرى.')
+            }
+
+            if (!data.status) {
+                throw new Error(data.message || 'فشل رفع الملف.')
             }
 
             router.push(`/results/${data.analysisId}`)
@@ -71,13 +86,25 @@ export function FileUpload() {
     return (
         <div className="w-full max-w-3xl mx-auto space-y-4">
             {uploadError && (
-                <Alert variant="destructive">
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertTitle>خطأ</AlertTitle>
-                    <AlertDescription>
-                        {uploadError}
-                    </AlertDescription>
-                </Alert>
+                <div className="flex items-start gap-4 p-5 relative overflow-hidden rounded-[32px] bg-red-50/80 border border-red-100 shadow-sm dark:bg-red-950/20 dark:border-red-900/30 transition-all animate-in fade-in slide-in-from-top-4">
+                    <div className="absolute top-0 right-0 w-2 h-full bg-red-500" />
+                    <div className="flex shrink-0 items-center justify-center w-12 h-12 rounded-2xl bg-white shadow-sm border border-red-100 text-red-500 dark:bg-red-900/50 dark:border-red-800 dark:text-red-400">
+                        <AlertCircle className="w-6 h-6" />
+                    </div>
+                    <div className="flex-1 pt-1">
+                        <h4 className="text-lg font-bold text-red-900 dark:text-red-200 mb-1">
+                            عذراً  !                        </h4>
+                        <p className="text-sm font-medium text-red-600 dark:text-red-400 leading-relaxed">
+                            {uploadError}
+                        </p>
+                    </div>
+                    <button
+                        onClick={() => setUploadError(null)}
+                        className="shrink-0 flex items-center justify-center w-10 h-10 text-red-400 hover:text-red-600 hover:bg-white dark:hover:bg-red-900/50 rounded-xl transition-all shadow-sm border border-transparent hover:border-red-100 dark:hover:border-red-800"
+                    >
+                        <X className="w-5 h-5" />
+                    </button>
+                </div>
             )}
 
             {!file ? (

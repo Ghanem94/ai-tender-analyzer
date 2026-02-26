@@ -1,6 +1,6 @@
 import { DashboardHeader } from "@/components/shared/dashboard-header"
-import { DashboardStats } from "@/components/dashboard/dashboard-stats"
-import { RecentOperations } from "@/components/dashboard/recent-operations"
+import { DashboardStats } from "./components/dashboard-stats"
+import { RecentOperations } from "./components/recent-operations"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { UploadCloud } from "lucide-react"
@@ -26,11 +26,7 @@ export default function DashboardPage() {
                 <DashboardStats />
                 <RecentOperations />
             </main>
-            <div className="py-8">
-                <p className="text-xs text-center text-muted-foreground dir-ltr">
-                    © 2026 صنع بمناسبة الرؤية
-                </p>
-            </div>
+
         </div>
     )
 }

@@ -21,6 +21,7 @@ import {
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { InfoCard, FileDetailsCard } from "@/components/shared/file-details-card"
 
 interface AnalysisData {
     id: string
@@ -29,6 +30,12 @@ interface AnalysisData {
     riskScore: number | null
     summary: string | null
     result: string | null
+    recommendation: string | null
+    statusColor: string | null
+    legalAnalysis: any | null
+    technicalRequirements: any | null
+    timeline: string | null
+    financialTerms: string | null
     createdAt: string
     updatedAt: string
     documents: { id: string; name: string; type: string; size: number; createdAt: string }[]
@@ -124,15 +131,16 @@ export default function ResultsPage() {
         }
     }
 
-    const score = parsed.risk_score ?? parsed.score ?? parsed.riskScore ?? analysis.riskScore ?? 0
+    const score = analysis.riskScore ?? parsed.risk_score ?? parsed.score ?? parsed.riskScore ?? 0
     const hasWebhookResult = analysis.result !== null && Object.keys(parsed).length > 0
 
     // Status color handling
-    const statusColorRaw = parsed.status_color?.toLowerCase() || ""
+    const statusColorRaw = (analysis.statusColor || parsed.status_color || "").toLowerCase()
     let riskColor = score >= 70 ? "#FF4B4B" : score >= 40 ? "#F59E0B" : "#10B981"
     let riskLevelStr = score >= 70 ? "مرتفع" : score >= 40 ? "متوسط" : "منخفض"
     let riskBgColor = score >= 70 ? "bg-red-500/10 text-red-500 border-red-500/20" : score >= 40 ? "bg-amber-500/10 text-amber-500 border-amber-500/20" : "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
 
+    // If explicit text color overrides
     if (statusColorRaw.includes("green")) {
         riskColor = "#10B981"
         riskLevelStr = "منخفض"
@@ -148,12 +156,12 @@ export default function ResultsPage() {
     }
 
     const title = parsed.title ?? "تقرير التحليل"
-    const summary = parsed.summary ?? analysis.summary ?? "تم تحليل المستند بنجاح."
-    const recommendation = parsed.recommendation
-    const legalAnalysis = parsed.legal_analysis ?? []
-    const technicalRequirements = parsed.technical_requirements ?? []
-    const timeline = parsed.timeline
-    const financialTerms = parsed.financial_terms
+    const summary = analysis.summary ?? parsed.summary ?? "تم تحليل المستند بنجاح."
+    const recommendation = analysis.recommendation ?? parsed.recommendation
+    const legalAnalysis = analysis.legalAnalysis ?? parsed.legal_analysis ?? []
+    const technicalRequirements = analysis.technicalRequirements ?? parsed.technical_requirements ?? []
+    const timeline = analysis.timeline ?? parsed.timeline
+    const financialTerms = analysis.financialTerms ?? parsed.financial_terms
 
     function getStatusInfo(status: string) {
         switch (status) {
@@ -171,8 +179,7 @@ export default function ResultsPage() {
         <div className="flex flex-col lg:flex-row min-h-screen bg-[#FDFCF9] font-sans selection:bg-[#9A8D59]/30 selection:text-[#1A1A1A]" dir="rtl">
             {/* SIDEBAR - Fixed height to keep buttons visible, visually hidden scrollbar */}
             <aside className="w-full lg:w-[420px] lg:h-screen lg:sticky lg:top-0 bg-[#0A0A0A] text-white flex flex-col shrink-0 relative overflow-hidden p-6 lg:p-8 shadow-2xl z-20">
-                {/* Decorative background glow */}
-                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#9A8D59]/20 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
+                {/* Decorative background glow removed */}
 
                 <div className="flex flex-col h-full relative z-10 w-full">
                     {/* Header: Back Button */}
@@ -190,8 +197,7 @@ export default function ResultsPage() {
                         {/* Score Circle */}
                         <div className="flex flex-col items-center justify-center animate-in fade-in slide-in-from-bottom-4 duration-700">
                             <div className="relative w-48 h-48 sm:w-56 sm:h-56 flex items-center justify-center mb-6">
-                                {/* Outer Glow */}
-                                <div className="absolute inset-0 rounded-full blur-2xl opacity-20" style={{ backgroundColor: riskColor }}></div>
+                                {/* Outer Glow removed */}
 
                                 {/* Inner Background */}
                                 <div className="absolute inset-4 rounded-full bg-[#1A1A1A]/50 backdrop-blur-md border border-white/5"></div>
@@ -231,17 +237,12 @@ export default function ResultsPage() {
                             <div className="space-y-2 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150">
                                 <h3 className="text-[10px] font-bold uppercase tracking-widest text-white/30 mb-2 px-1">المستندات المرفقة</h3>
                                 {analysis.documents.map((doc) => (
-                                    <div key={doc.id} className="group bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/10 transition-all rounded-xl p-3 flex items-center gap-3 cursor-default">
-                                        <div className="w-10 h-10 bg-white/5 rounded-lg flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-300">
-                                            <File className="w-4 h-4 text-white/70" />
-                                        </div>
-                                        <div className="overflow-hidden flex-1">
-                                            <p className="text-xs font-medium text-white/90 truncate ltr group-hover:text-white transition-colors">{doc.name}</p>
-                                            <p className="text-[10px] text-white/40 mt-0.5 font-mono tracking-wider">
-                                                {(doc.size / (1024 * 1024)).toFixed(2)} MB
-                                            </p>
-                                        </div>
-                                    </div>
+                                    <FileDetailsCard
+                                        key={doc.id}
+                                        name={doc.name}
+                                        size={doc.size}
+                                        className="bg-white/5 border-white/5"
+                                    />
                                 ))}
                             </div>
                         )}
@@ -276,10 +277,7 @@ export default function ResultsPage() {
                             <Download className="w-4 h-4 ml-2 group-hover:-translate-y-1 transition-transform" />
                             تحميل التقرير الكامل
                         </Button>
-                        <Button variant="outline" className="w-full h-12 border-white/10 bg-white/5 backdrop-blur-md text-white hover:bg-white/10 hover:text-white rounded-xl transition-colors text-sm">
-                            <Share2 className="w-4 h-4 ml-2" />
-                            مشاركة النتائج
-                        </Button>
+
                     </div>
                 </div>
             </aside>
@@ -300,7 +298,7 @@ export default function ResultsPage() {
                             {/* Recommendation Hero Section */}
                             <div className="mb-8">
                                 {recommendation ? (
-                                    <div className="relative overflow-hidden group bg-gradient-to-br from-[#9A8D59]/10 via-[#FDFCF9] to-[#9A8D59]/5 rounded-[1.5rem] p-10 md:p-14 border border-[#9A8D59]/20 shadow-inner">
+                                    <div className="relative overflow-hidden group bg-gradient-to-br from-[#9A8D59]/10 via-[#FDFCF9] to-[#9A8D59]/5 rounded-[1.5rem] p-8 md:p-10 border border-[#9A8D59]/20 shadow-inner">
                                         <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-transparent via-[#9A8D59] to-transparent opacity-50"></div>
                                         <div className="absolute -top-16 -left-16 text-[#9A8D59]/10 transition-transform duration-700 group-hover:scale-125 group-hover:rotate-45 pointer-events-none">
                                             <Sparkles className="w-80 h-80" />
@@ -308,18 +306,20 @@ export default function ResultsPage() {
                                         <div className="absolute -bottom-16 -right-16 text-[#9A8D59]/10 transition-transform duration-700 group-hover:scale-125 group-hover:-rotate-45 pointer-events-none">
                                             <Briefcase className="w-80 h-80" />
                                         </div>
-                                        <div className="absolute top-6 right-6 md:top-8 md:right-8 w-14 h-14 md:w-16 md:h-16 bg-white rounded-2xl shadow-sm border border-[#9A8D59]/20 flex items-center justify-center z-20">
-                                            <Briefcase className="w-7 h-7 md:w-8 md:h-8 text-[#9A8D59]" />
-                                        </div>
-                                        <div className="relative z-10 flex flex-col items-center text-center gap-4 max-w-4xl mx-auto mt-4 md:mt-2">
-                                            <h4 className="text-2xl md:text-4xl font-extrabold text-[#1A1A1A] leading-tight tracking-tight px-4 md:px-16 pt-8 md:pt-4">
-                                                {typeof recommendation === "string" ? recommendation : recommendation.title}
-                                            </h4>
-                                            {typeof recommendation !== "string" && recommendation.description && (
-                                                <p className="text-base md:text-lg text-[#4A4A4A] leading-relaxed font-medium">
-                                                    {recommendation.description}
-                                                </p>
-                                            )}
+                                        <div className="relative z-10 flex items-start gap-6">
+                                            <div className="shrink-0 w-14 h-14 md:w-16 md:h-16 bg-white rounded-2xl shadow-sm border border-[#9A8D59]/20 flex items-center justify-center">
+                                                <Briefcase className="w-7 h-7 md:w-8 md:h-8 text-[#9A8D59]" />
+                                            </div>
+                                            <div className="flex flex-col items-start text-right gap-3 pt-2">
+                                                <h4 className="text-xl md:text-2xl font-bold text-[#1A1A1A] leading-snug tracking-tight">
+                                                    {typeof recommendation === "string" ? recommendation : recommendation.title}
+                                                </h4>
+                                                {typeof recommendation !== "string" && recommendation.description && (
+                                                    <p className="text-sm md:text-base text-[#4A4A4A] leading-relaxed font-medium max-w-3xl">
+                                                        {recommendation.description}
+                                                    </p>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                 ) : (
@@ -362,7 +362,7 @@ export default function ResultsPage() {
                                     <TabsContent value="legal" className="mt-0 outline-none">
                                         {legalAnalysis.length > 0 ? (
                                             <div className="grid grid-cols-1 gap-5">
-                                                {legalAnalysis.map((gap, i) => (
+                                                {legalAnalysis.map((gap: { title: string, description: string }, i: number) => (
                                                     <div key={i} className="group bg-[#FDFCF9] rounded-[1.5rem] p-6 shadow-sm border border-[#E6E4DF]/50 hover:border-red-100 hover:bg-white hover:shadow-xl hover:shadow-red-500/5 transition-all duration-300 flex flex-col md:flex-row gap-5 items-start">
                                                         <div className="w-12 h-12 rounded-xl bg-red-50 text-red-500 flex items-center justify-center font-bold text-xl shrink-0 group-hover:scale-110 group-hover:bg-red-500 group-hover:text-white transition-all duration-300">
                                                             {i + 1}
@@ -383,7 +383,7 @@ export default function ResultsPage() {
                                     <TabsContent value="technical" className="mt-0 outline-none">
                                         {technicalRequirements.length > 0 ? (
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-                                                {technicalRequirements.map((req, i) => (
+                                                {technicalRequirements.map((req: string, i: number) => (
                                                     <div key={i} className="flex items-start gap-4 group bg-[#FDFCF9] rounded-2xl p-4 border border-[#E6E4DF]/50 hover:bg-white hover:border-blue-100 transition-colors">
                                                         <div className="mt-0.5 w-8 h-8 rounded-full bg-blue-50/50 text-blue-500 flex items-center justify-center shrink-0 group-hover:bg-blue-500 group-hover:text-white transition-colors duration-300">
                                                             <CheckCircle2 className="w-4 h-4" />
@@ -436,35 +436,23 @@ export default function ResultsPage() {
                         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-100">
                             <div className="bg-white rounded-[2.5rem] shadow-xl shadow-black/[0.03] border border-white p-8 md:p-12">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                    <div className="bg-[#F8F9FA] rounded-[1.5rem] p-6 border border-[#E6E4DF]/50">
-                                        <p className="text-sm text-[#7D7D7D] font-bold uppercase tracking-widest mb-2">اسم الملف</p>
-                                        <p className="font-bold text-xl text-[#1A1A1A] ltr break-all">{analysis.fileName}</p>
-                                    </div>
-                                    <div className="bg-[#F8F9FA] rounded-[1.5rem] p-6 border border-[#E6E4DF]/50">
-                                        <p className="text-sm text-[#7D7D7D] font-bold uppercase tracking-widest mb-2">حالة التحليل</p>
+                                    <InfoCard title="اسم الملف" value={analysis.fileName} />
+                                    <InfoCard title="حالة التحليل">
                                         <div className="flex items-center gap-3">
                                             <div className={`w-8 h-8 rounded-full flex items-center justify-center ${statusInfo.bg}`}>
                                                 <StatusIcon className={`w-4 h-4 ${statusInfo.text}`} />
                                             </div>
                                             <span className="font-bold text-xl text-[#1A1A1A]">{statusInfo.label}</span>
                                         </div>
-                                    </div>
-                                    <div className="bg-[#F8F9FA] rounded-[1.5rem] p-6 border border-[#E6E4DF]/50">
-                                        <p className="text-sm text-[#7D7D7D] font-bold uppercase tracking-widest mb-2">تاريخ الرفع</p>
-                                        <p className="font-bold text-xl text-[#1A1A1A]">
-                                            {new Date(analysis.createdAt).toLocaleDateString("ar-SA", {
-                                                day: "numeric",
-                                                month: "long",
-                                                year: "numeric",
-                                                hour: "2-digit",
-                                                minute: "2-digit",
-                                            })}
-                                        </p>
-                                    </div>
-                                    <div className="bg-[#F8F9FA] rounded-[1.5rem] p-6 border border-[#E6E4DF]/50">
-                                        <p className="text-sm text-[#7D7D7D] font-bold uppercase tracking-widest mb-2">معرف التحليل</p>
-                                        <p className="font-bold text-[#1A1A1A] ltr text-sm tracking-widest font-mono">{analysis.id}</p>
-                                    </div>
+                                    </InfoCard>
+                                    <InfoCard title="تاريخ الرفع" value={new Date(analysis.createdAt).toLocaleDateString("ar-SA", {
+                                        day: "numeric",
+                                        month: "long",
+                                        year: "numeric",
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                    })} valueClassName="font-bold text-xl text-[#1A1A1A]" />
+                                    <InfoCard title="معرف التحليل" value={analysis.id} valueClassName="font-bold text-[#1A1A1A] ltr text-sm tracking-widest font-mono" />
                                 </div>
 
                                 {/* Webhook hint */}

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
-import { db } from "@/lib/db"
 import { getSession } from "@/lib/auth"
+import { AdminService } from "@/services/admin.service"
 
 export async function GET() {
     try {
@@ -13,23 +13,7 @@ export async function GET() {
             )
         }
 
-        const users = await db.user.findMany({
-            orderBy: { createdAt: "desc" },
-            select: {
-                id: true,
-                name: true,
-                email: true,
-                role: true,
-                createdAt: true,
-                subscription: {
-                    select: {
-                        plan: true,
-                        analysisLimit: true,
-                    },
-                },
-            },
-        })
-
+        const users = await AdminService.getAllUsers()
         return NextResponse.json(users)
     } catch (error) {
         console.error("Fetch users error:", error)

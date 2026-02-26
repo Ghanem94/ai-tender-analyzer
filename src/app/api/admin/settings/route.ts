@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
-import { db } from "@/lib/db"
 import { getSession } from "@/lib/auth"
+import { SettingsService } from "@/services/settings.service"
 
 // GET: Fetch all settings
 export async function GET() {
@@ -10,13 +10,7 @@ export async function GET() {
             return NextResponse.json({ message: "غير مصرح" }, { status: 403 })
         }
 
-        const settings = await db.setting.findMany()
-
-        // Convert array to object { key: value }
-        const result: Record<string, string> = {}
-        for (const s of settings) {
-            result[s.key] = s.value
-        }
+        const result = await SettingsService.getAllSettings()
 
         return NextResponse.json(result)
     } catch (error) {
@@ -35,17 +29,9 @@ export async function POST(request: Request) {
 
         const body = await request.json()
 
-        // Upsert each setting
-        const keys = Object.keys(body)
-        for (const key of keys) {
-            await db.setting.upsert({
-                where: { key },
-                update: { value: body[key] },
-                create: { key, value: body[key] },
-            })
-        }
+        const result = await SettingsService.updateSettings(body)
 
-        return NextResponse.json({ message: "تم حفظ الإعدادات بنجاح" })
+        return NextResponse.json(result)
     } catch (error) {
         console.error("Failed to save settings", error)
         return NextResponse.json({ message: "خطأ في الخادم" }, { status: 500 })

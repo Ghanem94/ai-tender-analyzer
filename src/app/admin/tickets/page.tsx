@@ -1,14 +1,6 @@
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { MoreHorizontal, Filter } from "lucide-react"
+import { Filter } from "lucide-react"
+import { TicketsTable, TicketData } from "./components/tickets-table"
 
 const tickets = [
     {
@@ -91,8 +83,8 @@ export default function TicketsPage() {
                                 </TableCell>
                                 <TableCell>
                                     <Badge variant="outline" className={`rounded-md border ${ticket.priority === "High" ? "border-red-500/30 text-red-500 bg-red-500/5" :
-                                            ticket.priority === "Medium" ? "border-yellow-500/30 text-yellow-500 bg-yellow-500/5" :
-                                                "border-green-500/30 text-green-500 bg-green-500/5"
+                                        ticket.priority === "Medium" ? "border-yellow-500/30 text-yellow-500 bg-yellow-500/5" :
+                                            "border-green-500/30 text-green-500 bg-green-500/5"
                                         }`}>
                                         {ticket.priority === "High" ? "عالية" : ticket.priority === "Medium" ? "متوسطة" : "منخفضة"}
                                     </Badge>
