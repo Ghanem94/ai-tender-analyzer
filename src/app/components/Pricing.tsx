@@ -8,6 +8,18 @@ import { cn } from "@/lib/utils"
 
 const plans = [
     {
+        name: "المجانية",
+        price: "0",
+        features: [
+            "نقطة واحدة",
+            "النقطة الواحدة = 100 صفحة",
+            "تحليل قانوني و مالي عميق"
+        ],
+        icon: Gift,
+        cta: "اشترك الآن",
+        popular: false,
+    },
+    {
         name: "الأساسية",
         price: "50",
         features: [
