@@ -39,32 +39,72 @@ export class AdminService {
         })
         const totalRevenue = totalRevenueAggr._sum.amount || 0
 
-        // 2. Active Subscriptions
-        const activeSubscriptionsCount = await db.subscription.count({
-            where: { status: "ACTIVE" },
-        })
+        // 2. Total Users
+        const totalUsersCount = await db.user.count()
 
-        // 3. Total Subscriptions
-        const totalSubscriptionsCount = await db.subscription.count()
-
-        // 4. Available User Credits
+        // 3. Available User Credits (Points)
         const availableCreditsAggr = await db.subscription.aggregate({
             where: { status: "ACTIVE" },
             _sum: { analysisLimit: true },
         })
         const availableUserCredits = availableCreditsAggr._sum.analysisLimit || 0
 
-        // 5. Open Tickets
+        // 4. Total Analyzed Files
+        const totalAnalyzedFiles = await db.analysis.count()
+
+        // Keep existing counts for potential internal use or future expansion
+        const activeSubscriptionsCount = await db.subscription.count({
+            where: { status: "ACTIVE" },
+        })
         const openTicketsCount = await db.ticket.count({
             where: { status: "OPEN" },
         })
 
         return {
             totalRevenue,
-            activeSubscriptionsCount,
-            totalSubscriptionsCount,
+            totalUsersCount,
             availableUserCredits,
+            totalAnalyzedFiles,
+            activeSubscriptionsCount,
             openTicketsCount
         }
     }
+
+    /**
+     * Retrieves all invoices (payments) from the system.
+     * @returns A list of payment objects with associated user emails
+     */
+    static async getAllInvoices() {
+        return db.payment.findMany({
+            orderBy: { createdAt: "desc" },
+            include: {
+                user: {
+                    select: {
+                        email: true,
+                    },
+                },
+            },
+        })
+    }
+
+    /**
+     * Retrieves a single user by their ID with all relevant relations.
+     * @param id The user's ID
+     * @returns User object with subscription, payments, and analyses
+     */
+    static async getUserById(id: string) {
+        return db.user.findUnique({
+            where: { id },
+            include: {
+                subscription: true,
+                payments: {
+                    orderBy: { createdAt: "desc" },
+                },
+                analyses: {
+                    orderBy: { createdAt: "desc" },
+                },
+            },
+        })
+    }
 }
+

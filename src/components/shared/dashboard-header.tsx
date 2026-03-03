@@ -76,7 +76,7 @@ export function DashboardHeader() {
                                     <span>{item.title}</span>
                                     {item.title === "الرصيد والشحن" && (
                                         <span className="mr-1.5 inline-flex items-center justify-center rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-bold text-primary border border-primary/20 leading-none h-5">
-                                            10 ملفات
+                                            10 نقاط
                                         </span>
                                     )}
                                 </Link>

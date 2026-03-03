@@ -61,7 +61,7 @@
 
 :root {
   /* Brand Colors */
-  /* Primary: #9A8D59 (Gold) */
+  /* Primary: #A18E5E (Gold) */
   /* Background: #FDFCF9 */
   /* Text: #1A1A1A */
 
@@ -74,7 +74,7 @@
   --popover: #FFFFFF;
   --popover-foreground: #1A1A1A;
 
-  --primary: #9A8D59;
+  --primary: #A18E5E;
   --primary-foreground: #FFFFFF;
 
   --secondary: #F4F2ED;
@@ -92,7 +92,7 @@
 
   --border: #E6E4DF;
   --input: #E6E4DF;
-  --ring: #9A8D59;
+  --ring: #A18E5E;
 
   --radius: 2.5rem;
   /* 40px rounded */
@@ -115,7 +115,7 @@
   --popover: #2A2A2A;
   --popover-foreground: #FDFCF9;
 
-  --primary: #9A8D59;
+  --primary: #A18E5E;
   --primary-foreground: #FFFFFF;
 
   --secondary: #2A2A2A;
@@ -132,7 +132,7 @@
 
   --border: #2A2A2A;
   --input: #2A2A2A;
-  --ring: #9A8D59;
+  --ring: #A18E5E;
 }
 
 @layer base {

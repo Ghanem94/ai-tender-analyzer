@@ -1,7 +1,9 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Loader2 } from "lucide-react"
+import { Loader2, Users, Activity, Zap } from "lucide-react"
+import { StatCard, StatCardsGrid } from "../components/stat-cards"
+
 
 import { UsersTable } from "./components/users-table"
 
@@ -24,6 +26,16 @@ export default function UsersPage() {
     useEffect(() => {
         fetchUsers()
     }, [])
+
+    // Calculate Stats
+    const totalUsers = users.length
+
+    // Active users: Registered this month (proxy for active)
+    const now = new Date()
+    const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+    const activeUsers = users.filter(user => new Date(user.createdAt) >= firstDayOfMonth).length
+
+    const totalPoints = users.reduce((sum, user) => sum + (user.subscription?.analysisLimit || 0), 0)
 
     async function fetchUsers() {
         try {
@@ -48,15 +60,40 @@ export default function UsersPage() {
     }
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6" dir="rtl">
             <div>
-                <h1 className="text-3xl font-bold tracking-tight">المستخدمين</h1>
-                <p className="text-muted-foreground">
+                <h1 className="text-3xl font-bold tracking-tight Cairo">المستخدمين</h1>
+                <p className="text-muted-foreground Cairo">
                     إدارة المستخدمين والصلاحيات
                 </p>
             </div>
+
+            <StatCardsGrid>
+                <StatCard
+                    title="إجمالي المستخدمين"
+                    value={totalUsers}
+                    icon={Users}
+                    iconClassName="bg-blue-500/10 text-blue-500"
+                    description="كافة الحسابات المسجلة"
+                />
+                <StatCard
+                    title="المستخدمين النشطين"
+                    value={activeUsers}
+                    icon={Activity}
+                    iconClassName="bg-emerald-500/10 text-emerald-500"
+                    description="مسجلين لهذا الشهر"
+                />
+                <StatCard
+                    title="إجمالي نقاط الرصيد"
+                    value={totalPoints}
+                    icon={Zap}
+                    iconClassName="bg-amber-500/10 text-amber-500"
+                    description="رصيد النقاط الكلي الفعال"
+                />
+            </StatCardsGrid>
 
             <UsersTable users={users} />
         </div>
     )
 }
+

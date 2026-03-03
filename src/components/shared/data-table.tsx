@@ -78,12 +78,18 @@ export function DataTable<T>({
         setCurrentPage(1) // Reset page on filter change
     }
 
+    // Helper to get nested value
+    const getNestedValue = (obj: any, path: string) => {
+        return path.split(".").reduce((acc, part) => acc && acc[part], obj)
+    }
+
     // Filter data based on search query and active filters
     const filteredData = useMemo(() => {
         return data.filter((item) => {
             // Search filter
             if (searchQuery && searchKey) {
-                const searchValue = String((item as any)[searchKey] || "").toLowerCase()
+                const value = getNestedValue(item, String(searchKey))
+                const searchValue = String(value || "").toLowerCase()
                 if (!searchValue.includes(searchQuery.toLowerCase())) {
                     return false
                 }

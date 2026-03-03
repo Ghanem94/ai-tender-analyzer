@@ -5,7 +5,16 @@ import { useParams, useRouter } from "next/navigation";
 import { DashboardHeader } from "@/components/shared/dashboard-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Clock, CheckCircle2, AlertCircle, ArrowRight } from "lucide-react";
+import {
+    Clock,
+    CheckCircle2,
+    AlertCircle,
+    ArrowRight,
+    Calendar,
+    Download,
+    Sparkles
+} from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { StatusBadge } from "@/components/shared/status-badge";
 
 // We'll reuse the mock data for now, ideally this would come from an API
@@ -86,109 +95,137 @@ export default function TicketDetailsPage() {
     }
 
     return (
-        <div className="flex min-h-screen flex-col bg-background font-sans" dir="rtl">
+        <div className="flex min-h-screen flex-col bg-[#FDFDFD] font-sans" dir="rtl">
             <DashboardHeader />
-            <main className="flex-1 p-4 md:p-8 container mx-auto max-w-7xl">
-                <div className="space-y-6 max-w-5xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-[#E6E4DF]/50">
-                        <div className="flex items-center gap-4">
-                            <Button
-                                variant="outline"
-                                className="h-11 w-11 p-0 rounded-xl border-[#E6E4DF] text-[#4A4A4A] hover:bg-[#F8F9FA] hover:text-[#1A1A1A] transition-all shadow-sm flex items-center justify-center shrink-0"
-                                onClick={() => router.push("/support")}
-                            >
-                                <ArrowRight className="h-5 w-5" />
-                            </Button>
-                            <div>
-                                <h1 className="text-2xl md:text-3xl font-extrabold text-[#1A1A1A] tracking-tight">تفاصيل التذكرة</h1>
-                                <p className="text-[#7D7D7D] text-[15px] mt-1">متابعة حالة التذكرة والردود</p>
-                            </div>
+            <main className="flex-1 p-6 md:p-10 container mx-auto max-w-5xl space-y-8">
+                {/* Header Section */}
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-8 border-b border-[#E6E4DF]/60 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <div className="flex items-center gap-5">
+                        <Button
+                            variant="outline"
+                            className="h-12 w-12 p-0 rounded-2xl border-[#E6E4DF] text-[#4A4A4A] hover:bg-primary/5 hover:text-primary transition-all shadow-sm flex items-center justify-center shrink-0 border-2"
+                            onClick={() => router.push("/support")}
+                        >
+                            <ArrowRight className="h-6 w-6" />
+                        </Button>
+                        <div className="space-y-1">
+                            <h1 className="text-3xl font-black text-[#1A1A1A] tracking-tight Cairo">تفاصيل التذكرة</h1>
+                            <p className="text-[#7D7D7D] text-lg font-medium Cairo">متابعة حالة الطلب والردود المباشرة</p>
                         </div>
                     </div>
+                </div>
 
-                    <Card className="rounded-[1.5rem] border-[#E6E4DF] shadow-sm overflow-hidden bg-white">
-                        <div className="bg-[#FDFCF9] border-b border-[#E6E4DF]/60 p-6 md:p-8">
-                            <div className="space-y-4">
-                                <div className="flex items-start justify-between">
-                                    <div className="space-y-1">
-                                        <h2 className="text-2xl font-bold text-[#1A1A1A] pb-5">{ticket.subject}</h2>
-                                        <div className="flex flex-wrap items-center gap-4 text-[14px] font-medium text-[#7D7D7D]">
-                                            <div className="flex items-center gap-1.5">
-                                                <span className="text-[#A0A0A0]">رقم التذكرة:</span>
-                                                <span className="font-mono text-[#1A1A1A] bg-white px-2 py-0.5 rounded-md border border-[#E6E4DF] shadow-sm">{ticket.id}</span>
-                                            </div>
-                                            <span className="w-1 h-1 rounded-full bg-[#D4D4D4]"></span>
-                                            <div className="flex items-center gap-1.5">
-                                                <span className="text-[#A0A0A0]">القسم:</span>
-                                                <span className="text-[#1A1A1A]">{ticket.category}</span>
-                                            </div>
-                                            <span className="w-1 h-1 rounded-full bg-[#D4D4D4]"></span>
-                                            <div className="flex items-center gap-1.5">
-                                                <span className="text-[#A0A0A0]">تاريخ الإنشاء:</span>
-                                                <span className="font-mono text-[#1A1A1A]">{ticket.date}</span>
-                                            </div>
-                                        </div>
+                <div className="animate-in fade-in slide-in-from-bottom-8 duration-700 delay-150">
+                    <Card className="rounded-[2.5rem] border-[#E6E4DF]/60 shadow-2xl shadow-black/[0.03] overflow-hidden bg-white">
+                        {/* Ticket Summary Header */}
+                        <div className="bg-[#F8F9FA]/50 border-b border-[#E6E4DF]/60 p-8 md:p-10">
+                            <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
+                                <div className="space-y-4">
+                                    <div className="flex items-center gap-3">
+                                        <Badge className="Cairo rounded-xl bg-primary/10 text-primary border-none px-4 py-1.5 text-xs font-black">
+                                            {ticket.category}
+                                        </Badge>
+                                        <StatusBadge status={ticket.status} className="bg-opacity-10 shadow-none border-none py-1.5 px-4 font-black text-xs Cairo" />
                                     </div>
-                                    <div className="shrink-0 flex items-center gap-3">
-                                        <StatusBadge status={ticket.status} className="bg-opacity-10 shadow-none" />
+                                    <h2 className="text-3xl font-black text-[#1A1A1A] Cairo leading-tight">{ticket.subject}</h2>
+
+                                    <div className="flex flex-wrap items-center gap-5 text-sm font-bold text-[#7D7D7D]">
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-[#A0A0A0] Cairo font-bold">الرقم المرجعي:</span>
+                                            <span className="font-mono text-primary bg-primary/5 px-2.5 py-0.5 rounded-lg border border-primary/10">{ticket.id}</span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <Calendar className="h-4 w-4 text-primary" />
+                                            <span className="font-mono text-[#1A1A1A]">{new Date(ticket.date).toLocaleDateString("ar-SA", { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                         {/* Ticket Content Body */}
-                        <CardContent className="p-6 md:p-8 space-y-8">
+                        <CardContent className="p-8 md:p-12 space-y-12">
                             {/* Problem Description Area */}
-                            <div className="space-y-3">
-                                <div className="flex items-center gap-2 px-1">
-                                    <div className="w-8 h-8 rounded-lg bg-[#F8F9FA] border border-[#E6E4DF] flex items-center justify-center">
-                                        <AlertCircle className="w-4 h-4 text-[#4A4A4A]" />
+                            <div className="space-y-6">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-xl bg-[#F8F9FA] border border-[#E6E4DF] flex items-center justify-center text-primary shadow-sm">
+                                        <AlertCircle className="w-5 h-5" />
                                     </div>
-                                    <h3 className="text-lg font-bold text-[#1A1A1A]">وصف المشكلة</h3>
+                                    <h3 className="text-xl font-black text-[#1A1A1A] Cairo">وصف المشكلة</h3>
                                 </div>
-                                <div className="bg-[#F8F9FA] border border-[#E6E4DF]/60 p-6 rounded-2xl text-[15px] leading-relaxed text-[#4A4A4A] mr-10 relative before:content-[''] before:absolute before:-right-[21px] before:top-6 before:w-[21px] before:h-px before:bg-[#E6E4DF]/60">
-                                    {ticket.description}
-                                </div>
-                                {ticket.image && (
-                                    <div className="mr-10 mt-4 rounded-xl overflow-hidden border border-[#E6E4DF] shadow-sm max-w-sm">
-                                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                                        <img
-                                            src={ticket.image}
-                                            alt="مرفق التذكرة"
-                                            className="w-full h-auto object-cover max-h-[300px] hover:scale-105 transition-transform duration-300 cursor-pointer"
-                                            onClick={() => window.open(ticket.image, '_blank')}
-                                        />
+                                <div className="mr-8 relative">
+                                    <div className="absolute top-0 -right-6 bottom-0 w-px bg-gradient-to-b from-primary/20 via-primary/5 to-transparent"></div>
+                                    <div className="bg-[#FDFDFD] border border-[#E6E4DF]/60 p-8 rounded-[2rem] text-[17px] leading-relaxed text-[#4A4A4A] shadow-sm Cairo font-medium relative italic">
+                                        "{ticket.description}"
                                     </div>
-                                )}
+                                    {ticket.image && (
+                                        <div className="mt-8 rounded-[2rem] overflow-hidden border-2 border-[#E6E4DF] shadow-lg max-w-md group cursor-pointer transition-all hover:scale-[1.02]">
+                                            <img
+                                                src={ticket.image}
+                                                alt="مرفق التذكرة"
+                                                className="w-full h-auto object-cover max-h-[400px]"
+                                                onClick={() => window.open(ticket.image, '_blank')}
+                                            />
+                                            <div className="p-4 bg-white border-t border-[#E6E4DF] flex items-center justify-between">
+                                                <span className="text-xs font-bold text-[#7D7D7D] Cairo">مرفق الملف</span>
+                                                <Button variant="ghost" size="sm" className="h-8 w-8 rounded-lg">
+                                                    <Download className="h-4 w-4" />
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
 
                             {/* Support Reply Area */}
                             {ticket.reply ? (
-                                <div className="space-y-3">
-                                    <div className="flex items-center gap-2 px-1">
-                                        <div className="w-8 h-8 rounded-lg bg-[#9A8D59]/10 border border-[#9A8D59]/20 flex items-center justify-center">
-                                            <CheckCircle2 className="w-4 h-4 text-[#9A8D59]" />
+                                <div className="space-y-6 animate-in fade-in zoom-in-95 duration-500">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shadow-sm">
+                                            <CheckCircle2 className="w-5 h-5" />
                                         </div>
-                                        <h3 className="text-lg font-bold text-[#9A8D59]">رد الدعم الفني</h3>
+                                        <h3 className="text-xl font-black text-primary Cairo">رد فريق الدعم</h3>
                                     </div>
-                                    <div className="bg-[#FDFCF9] border border-[#9A8D59]/30 p-6 rounded-2xl text-[15px] leading-relaxed text-[#1A1A1A] shadow-[0_2px_8px_rgba(154,141,89,0.04)] mr-10 relative before:content-[''] before:absolute before:-right-[21px] before:top-6 before:w-[21px] before:h-px before:bg-[#9A8D59]/30">
-                                        {ticket.reply}
+                                    <div className="mr-8 relative">
+                                        <div className="absolute top-0 -right-6 bottom-0 w-px bg-gradient-to-b from-primary/40 via-primary/10 to-transparent"></div>
+                                        <div className="bg-primary/5 border-2 border-primary/10 p-8 rounded-[2rem] text-[17px] leading-relaxed text-[#1A1A1A] shadow-md Cairo font-bold relative">
+                                            {ticket.reply}
+                                            <div className="absolute -top-3 -left-3 bg-white p-2 rounded-full border-2 border-primary/10 shadow-sm">
+                                                <Sparkles className="h-4 w-4 text-primary" />
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             ) : (
-                                <div className="mr-10 py-6 px-6 bg-[#F8F9FA]/50 border border-[#E6E4DF] border-dashed rounded-2xl flex items-center gap-4">
-                                    <div className="w-10 h-10 rounded-full bg-white border border-[#E6E4DF] shadow-sm flex items-center justify-center shrink-0">
-                                        <Clock className="w-5 h-5 text-[#A0A0A0]" />
+                                <div className="mr-8 p-10 bg-[#F8F9FA]/40 border-2 border-[#E6E4DF] border-dashed rounded-[2.5rem] flex flex-col items-center text-center gap-6">
+                                    <div className="w-20 h-20 rounded-full bg-white border-2 border-[#E6E4DF] shadow-lg flex items-center justify-center relative overflow-hidden group">
+                                        <Clock className="w-10 h-10 text-amber-500 group-hover:rotate-12 transition-transform duration-500" />
+                                        <div className="absolute inset-0 bg-amber-500/5 animate-pulse"></div>
                                     </div>
-                                    <div>
-                                        <h4 className="text-[#1A1A1A] font-bold text-[15px]">جاري مراجعة التذكرة</h4>
-                                        <p className="text-[#7D7D7D] font-medium text-sm mt-0.5">
-                                            فريق الدعم يعمل حالياً على مراجعة طلبك وسيقوم بالرد عليك في أقرب وقت. شكراً لصبرك.
+                                    <div className="space-y-2">
+                                        <h4 className="text-[#1A1A1A] font-black text-2xl Cairo">التذكرة تحت المراجعة</h4>
+                                        <p className="text-[#7D7D7D] font-bold text-[16px] max-w-lg Cairo leading-relaxed">
+                                            نحن نهتم بطلبك، يقوم فريقنا بمراجعة التفاصيل وسنقوم بالرد عليك في أقرب وقت عبر هذا النظام.
                                         </p>
                                     </div>
+                                    <div className="w-16 h-1.5 bg-primary/10 rounded-full animate-pulse"></div>
                                 </div>
                             )}
                         </CardContent>
+
+                        {/* Footer Actions */}
+                        <div className="bg-[#F8F9FA]/50 border-t border-[#E6E4DF]/60 p-8 md:p-10 flex flex-col md:flex-row items-center justify-between gap-6">
+                            <div className="flex items-center gap-3 text-sm font-bold text-[#7D7D7D] Cairo">
+                                <Clock className="h-4 w-4" />
+                                وقت الاستجابة المتوقع: أقل من 24 ساعة
+                            </div>
+                            <Button
+                                className="w-full md:w-auto h-12 px-8 rounded-2xl bg-primary hover:bg-primary/90 text-white font-black Cairo shadow-lg shadow-primary/20 transition-all hover:scale-105"
+                                onClick={() => router.push("/support")}
+                            >
+                                العودة للقائمة
+                            </Button>
+                        </div>
                     </Card>
                 </div>
             </main>

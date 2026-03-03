@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { LayoutDashboard, Users, MessageSquare, LogOut, Settings, ShieldCheck } from "lucide-react"
+import { LayoutDashboard, Users, MessageSquare, LogOut, Settings, ShieldCheck, FileText } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -21,7 +21,7 @@ export function AdminSidebar({ className }: SidebarProps) {
     const navItems = [
         { href: "/admin", label: "نظرة عامة", icon: LayoutDashboard },
         { href: "/admin/users", label: "المستخدمين", icon: Users },
-        { href: "/admin/subscriptions", label: "الاشتراكات", icon: Users },
+        { href: "/admin/invoices", label: "الفواتير", icon: FileText },
         { href: "/admin/tickets", label: "الدعم الفني", icon: MessageSquare },
     ]
 
